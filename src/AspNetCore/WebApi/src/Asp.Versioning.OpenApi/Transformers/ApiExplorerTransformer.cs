@@ -5,6 +5,9 @@ namespace Asp.Versioning.OpenApi.Transformers;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi;
 using System.Reflection;
@@ -53,7 +56,7 @@ public class ApiExplorerTransformer :
 
         if ( context.ParameterDescription?.DefaultValue is string value )
         {
-            schema.Enum ??= new List<JsonNode>(1);
+            schema.Enum ??= new List<JsonNode>( 1 );
             schema.Enum.Add( JsonNode.Parse( $"\"{value}\"" )! );
         }
 
@@ -69,7 +72,10 @@ public class ApiExplorerTransformer :
         ArgumentNullException.ThrowIfNull( document );
         ArgumentNullException.ThrowIfNull( context );
 
-        UpdateFromAssemblyInfo( document, Options.Description );
+        var services = context.ApplicationServices;
+        var info = new DocInfo( services.GetService<IConfiguration>()?.GetSection( "OpenApi" ) );
+
+        UpdateInfo( document.Info, info, Options, DefaultTitle( services, context.DocumentName ) );
 
         document.Info.Version = Options.Description.ApiVersion.ToString();
 
@@ -122,24 +128,25 @@ public class ApiExplorerTransformer :
         return Task.CompletedTask;
     }
 
-    private static void UpdateFromAssemblyInfo( OpenApiDocument document, ApiVersionDescription api )
+    // OpenApiDocumentService always seeds the title as "{ApplicationName} | {DocumentName}". that is
+    // indistinguishable from an explicitly configured title unless the same value is recomputed here.
+    // REF: https://github.com/dotnet/aspnetcore/blob/main/src/OpenApi/src/Services/OpenApiDocumentService.cs
+    private static string? DefaultTitle( IServiceProvider services, string documentName ) =>
+        services.GetService<IHostEnvironment>() is { } environment
+        ? $"{environment.ApplicationName} | {documentName}"
+        : default;
+
+    private static void UpdateInfo( OpenApiInfo info, DocInfo doc, VersionedOpenApiOptions options, string? defaultTitle )
     {
-        if ( Assembly.GetEntryAssembly() is not { } assembly )
+        if ( !string.IsNullOrEmpty( doc.Title )
+             && ( string.IsNullOrEmpty( info.Title ) || info.Title == defaultTitle ) )
         {
-            return;
+            info.Title = options.DocumentTitle.Format( doc.Title, options.Description );
         }
 
-        var title = assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title;
-        var description = assembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description;
-
-        if ( !string.IsNullOrEmpty( title ) )
+        if ( string.IsNullOrEmpty( info.Description ) )
         {
-            document.Info.Title = $"{title} | {api.GroupName}";
-        }
-
-        if ( !string.IsNullOrEmpty( description ) )
-        {
-            document.Info.Description = description;
+            info.Description = doc.Description;
         }
     }
 
@@ -359,5 +366,54 @@ public class ApiExplorerTransformer :
         }
 
         return obj;
+    }
+
+    private sealed class DocInfo( IConfigurationSection? config )
+    {
+        public string Title
+        {
+            get
+            {
+                if ( field is null )
+                {
+                    if ( config?.Exists() == true )
+                    {
+                        field = config?["Document:Title"] ?? config?[nameof( Title )];
+                    }
+
+                    if ( string.IsNullOrEmpty( field ) && Assembly.GetEntryAssembly() is { } assembly )
+                    {
+                        field = assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title;
+                    }
+
+                    field ??= string.Empty;
+                }
+
+                return field;
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                if ( field is null )
+                {
+                    if ( config?.Exists() == true )
+                    {
+                        field = config?["Document:Description"] ?? config?[nameof( Description )];
+                    }
+
+                    if ( string.IsNullOrEmpty( field ) && Assembly.GetEntryAssembly() is { } assembly )
+                    {
+                        field = assembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description;
+                    }
+
+                    field ??= string.Empty;
+                }
+
+                return field;
+            }
+        }
     }
 }

@@ -24,6 +24,13 @@ public class VersionedOpenApiOptions
     public required OpenApiOptions Document { get; init; }
 
     /// <summary>
+    /// Gets the OpenAPI document title configuration options.
+    /// </summary>
+    /// <value>These <see cref="OpenApiDocumentTitleOptions">options</see> provide additional configuration
+    /// for indicating which additional information should be included in an OpenAPI document title.</value>
+    public required OpenApiDocumentTitleOptions DocumentTitle { get; init; }
+
+    /// <summary>
     /// Gets the OpenAPI document description configuration options.
     /// </summary>
     /// <value>These <see cref="OpenApiDocumentDescriptionOptions">options</see> provide additional configuration

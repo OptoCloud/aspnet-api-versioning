@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Text;
 
 /// <summary>
-/// Represents the options used to format the OpenAPI document title.
+/// Represents the options used to format the OpenAPI document description.
 /// </summary>
 public class OpenApiDocumentDescriptionOptions
 {

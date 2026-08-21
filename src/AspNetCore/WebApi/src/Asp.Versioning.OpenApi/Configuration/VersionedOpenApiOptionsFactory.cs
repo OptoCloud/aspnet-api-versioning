@@ -48,6 +48,7 @@ internal sealed class VersionedOpenApiOptionsFactory(
         {
             Description = context.Description,
             Document = context.Options,
+            DocumentTitle = new(),
             DocumentDescription = new(),
         };
 
@@ -90,6 +91,7 @@ internal sealed class VersionedOpenApiOptionsFactory(
     {
         Description = new( ApiVersion.Neutral, string.Empty ),
         Document = new(),
+        DocumentTitle = new(),
         DocumentDescription = new(),
     };
 
