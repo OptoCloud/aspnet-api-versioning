@@ -2,9 +2,13 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
  <PropertyGroup>
-  <DefaultTargetFramework>net10.0</DefaultTargetFramework>
-  <DotNetReleaseBasePackageVersion>10.0</DotNetReleaseBasePackageVersion>
-  <DotNetReleasePackageVersion>$(DotNetReleaseBasePackageVersion).0</DotNetReleasePackageVersion>
+  <RootDir>$([MSBuild]::EnsureTrailingSlash($([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), .gitignore))))</RootDir>
+  <BuildDir>$([MSBuild]::EnsureTrailingSlash($(RootDir)build))</BuildDir>
+ </PropertyGroup>
+
+ <Import Project="$(BuildDir)root.props" />
+
+ <PropertyGroup>
   <CurrentTfmFolder>.net</CurrentTfmFolder>
   <RootDir>$([MSBuild]::EnsureTrailingSlash($([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), .gitignore))))</RootDir>
   <BuildDir>$([MSBuild]::EnsureTrailingSlash($(RootDir)build))</BuildDir>

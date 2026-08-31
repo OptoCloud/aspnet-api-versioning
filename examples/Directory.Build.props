@@ -2,11 +2,17 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
  <PropertyGroup>
+  <RootDir>$([MSBuild]::EnsureTrailingSlash($([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), .gitignore))))</RootDir>
+  <BuildDir>$([MSBuild]::EnsureTrailingSlash($(RootDir)build))</BuildDir>
+ </PropertyGroup>
+
+ <Import Project="$(BuildDir)common.props" />
+
+ <PropertyGroup>
   <RootNamespace>ApiVersioning.Examples</RootNamespace>
-  <LangVersion>latest</LangVersion>
-  <ImplicitUsings>enable</ImplicitUsings>
   <IsTestProject>false</IsTestProject>
   <IsPackable>false</IsPackable>
+  <IsClsCompliant>false</IsClsCompliant>
 
   <!-- REF: https://github.com/NuGet/Home/issues/9357 -->
   <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
