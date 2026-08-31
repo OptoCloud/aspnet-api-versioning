@@ -248,7 +248,6 @@ public class MediaTypeApiVersionReaderTest
 
     private sealed class CustomAcceptHeaderReader : MediaTypeApiVersionReader
     {
-        protected override string ReadAcceptHeader(
-            ICollection<MediaTypeWithQualityHeaderValue> accept ) => "42.0";
+        protected override IReadOnlyList<string> ReadAcceptHeader( ICollection<MediaTypeWithQualityHeaderValue> accept ) => ["42.0"];
     }
 }

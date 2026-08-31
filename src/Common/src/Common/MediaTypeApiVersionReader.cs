@@ -16,17 +16,11 @@ using static System.StringComparison;
 /// </summary>
 public partial class MediaTypeApiVersionReader : IApiVersionReader
 {
-    private readonly bool acceptHeaderOverridden;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="MediaTypeApiVersionReader"/> class.
     /// </summary>
     /// <remarks>This constructor always uses the "v" media type parameter.</remarks>
-    public MediaTypeApiVersionReader()
-    {
-        ParameterName = "v";
-        acceptHeaderOverridden = IsAcceptHeaderOverridden();
-    }
+    public MediaTypeApiVersionReader() => ParameterName = "v";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MediaTypeApiVersionReader"/> class.
@@ -36,7 +30,6 @@ public partial class MediaTypeApiVersionReader : IApiVersionReader
     {
         ArgumentException.ThrowIfNullOrEmpty( parameterName );
         ParameterName = parameterName;
-        acceptHeaderOverridden = IsAcceptHeaderOverridden();
     }
 
     /// <summary>
@@ -63,24 +56,15 @@ public partial class MediaTypeApiVersionReader : IApiVersionReader
     /// media types is used instead.</para>
     /// <para>This method will be refactored in a future major version.</para>
     /// </remarks>
-    protected virtual string? ReadAcceptHeader( ICollection<MediaTypeWithQualityHeaderValue> accept )
+    protected virtual IReadOnlyList<string> ReadAcceptHeader( ICollection<MediaTypeWithQualityHeaderValue> accept )
     {
-        // TODO: refactor breaking change at next major version
         ArgumentNullException.ThrowIfNull( accept );
-        return ReadRankedAcceptHeader( accept ) is { } versions ? versions[0] : default;
-    }
 
-    // this is the correct, expected behavior because equally ranked media types can collate more than one API version.
-    // it cannot replace ReadAcceptHeader before the next major version because widening the return type is a breaking
-    // change for any derived class that overrides it. this becomes the permanent implementation when a breaking change
-    // is allowed, at which point ReadAcceptHeader and the override detection it requires can both be removed
-    private List<string>? ReadRankedAcceptHeader( ICollection<MediaTypeWithQualityHeaderValue> accept )
-    {
         var count = accept.Count;
 
         if ( count == 0 )
         {
-            return default;
+            return [];
         }
 
         var mediaTypes = accept.ToArray();
@@ -130,34 +114,10 @@ public partial class MediaTypeApiVersionReader : IApiVersionReader
             start = end;
         }
 
-        return versions;
+        return versions ?? [];
     }
 
-    private bool IsAcceptHeaderOverridden()
-    {
-        if ( GetType() == typeof( MediaTypeApiVersionReader ) )
-        {
-            return false;
-        }
-
-        var readAcceptHeader = ReadAcceptHeader;
-
-        return readAcceptHeader.Method.DeclaringType != typeof( MediaTypeApiVersionReader );
-    }
-
-    private static IReadOnlyList<string> Collate( string? version, string? otherVersion )
-    {
-        if ( otherVersion is null )
-        {
-            return version is null ? [] : [version];
-        }
-
-        return version is null || StringComparer.OrdinalIgnoreCase.Equals( version, otherVersion )
-               ? [otherVersion]
-               : [version, otherVersion];
-    }
-
-    private static List<string> Collate( string? version, List<string>? versions )
+    private static IReadOnlyList<string> Collate( string? version, IReadOnlyList<string> versions )
     {
         if ( versions is null || versions.Count == 0 )
         {

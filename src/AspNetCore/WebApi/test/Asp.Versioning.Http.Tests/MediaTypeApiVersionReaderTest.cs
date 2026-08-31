@@ -4,6 +4,7 @@ namespace Asp.Versioning;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using static ApiVersionParameterLocation;
 using static System.IO.Stream;
 
@@ -271,7 +272,6 @@ public class MediaTypeApiVersionReaderTest
 
     private sealed class CustomAcceptHeaderReader : MediaTypeApiVersionReader
     {
-        protected override string ReadAcceptHeader(
-            ICollection<Microsoft.Net.Http.Headers.MediaTypeHeaderValue> accept ) => "42.0";
+        protected override IReadOnlyList<string> ReadAcceptHeader( ICollection<MediaTypeHeaderValue> accept ) => ["42.0"];
     }
 }
