@@ -170,6 +170,7 @@
     <Project Path="src/Common/test/Common.OData.ApiExplorer.Tests/Common.OData.ApiExplorer.Tests.shproj" />
     <Project Path="src/Common/test/Common.OData.Tests/Common.OData.Tests.shproj" />
     <Project Path="src/Common/test/Common.Tests/Common.Tests.shproj" />
+    <File Path="src/Common/test/Licenses.cs" />
   </Folder>
   <Project Path="wiki/wiki.msbuildproj" Type="13b669be-bb05-4ddf-9536-439f39a36129" />
 </Solution>
