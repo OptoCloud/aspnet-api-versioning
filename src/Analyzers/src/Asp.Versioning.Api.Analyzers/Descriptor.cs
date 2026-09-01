@@ -207,15 +207,6 @@ internal static class Descriptor
             Unnecessary,
             CompilationEnd );
 
-    public static readonly DiagnosticDescriptor AV0030_MissingDocumentPerVersion =
-        Diagnostic(
-            "AV0030",
-            "Missing WithDocumentPerVersion",
-            Usage,
-            Warning,
-            "Call MapOpenApi().WithDocumentPerVersion() so that a document is generated for each API version",
-            CompilationEnd );
-
     public static readonly DiagnosticDescriptor AV0031_MissingApiExplorer =
         Diagnostic(
             "AV0031",

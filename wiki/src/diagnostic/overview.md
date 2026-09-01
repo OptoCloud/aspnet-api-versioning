@@ -36,8 +36,10 @@ Versioning.
 | {{#include ../icons/warning.md}} | [AV0027](av0027.md) | Usage         | Use DescribeApiVersions                         |
 | {{#include ../icons/warning.md}} | [AV0028](av0028.md) | Usage         | Sunset policy takes effect before deprecation   |
 | {{#include ../icons/warning.md}} | [AV0029](av0029.md) | Usage         | Remove unnecessary OpenAPI services             |
-| {{#include ../icons/warning.md}} | [AV0030](av0030.md) | Usage         | Missing WithDocumentPerVersion                  |
+| {{#include ../icons/warning.md}} | [AV0030](av0030.md) | Usage         | Missing WithDocumentPerVersion<sup>1</sup>      |
 | {{#include ../icons/warning.md}} | [AV0031](av0031.md) | Usage         | Missing API explorer                            |
+
+<sup>1</sup> Applies to .NET 10 only
 
 ## Reporting
 
