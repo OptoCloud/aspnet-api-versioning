@@ -55,7 +55,7 @@ Once you have that configured, you need only generate an OpenAPI document per ve
 generated documents it should expect.
 
 ```c#
-app.MapOpenApi().WithDocumentPerVersion();
+app.MapOpenApi();
 app.MapScalarApiReference(
     options =>
     {

@@ -62,9 +62,10 @@ public class XmlCommentsTransformer : IOpenApiSchemaTransformer, IOpenApiOperati
             schema.Description = description;
         }
 
-        if ( schema.Example is null && ToJson( Documentation.GetExample( type ) ) is { } example )
+        if ( ToJson( Documentation.GetExample( type ) ) is { } example )
         {
-            schema.Example = example;
+            schema.Examples ??= [];
+            schema.Examples.Add( example );
         }
 
         // a schema is created once per type and the same instance is reused everywhere the type appears, including
@@ -253,8 +254,7 @@ public class XmlCommentsTransformer : IOpenApiSchemaTransformer, IOpenApiOperati
             member.Description = description;
         }
 
-        if ( member.Example is null
-             && member.Examples is not null
+        if ( member.Examples is not null
              && ToJson( Documentation.GetExample( property ) ) is { } example )
         {
             member.Examples.Add( example );

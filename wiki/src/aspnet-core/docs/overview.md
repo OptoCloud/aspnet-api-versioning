@@ -36,7 +36,7 @@ builder.Services.AddApiVersioning()
 var app = builder.Build();
 
 // configure OpenAPI and Scalar to use a document per version
-app.MapOpenApi().WithDocumentPerVersion();
+app.MapOpenApi();
 app.MapScalarApiReference(
     options =>
     {
@@ -92,7 +92,7 @@ greeter.MapGrpcService<GreeterService>()
        .HasApiVersion( 3.0 );
 
 // configure OpenAPI and Scalar to use a document per version
-app.MapOpenApi().WithDocumentPerVersion();
+app.MapOpenApi();
 app.MapScalarApiReference(
     options =>
     {
@@ -139,7 +139,7 @@ builder.Services.AddApiVersioning()
 var app = builder.Build();
 
 // configure OpenAPI and Scalar to use a document per version
-app.MapOpenApi().WithDocumentPerVersion();
+app.MapOpenApi();
 app.MapScalarApiReference(
     options =>
     {

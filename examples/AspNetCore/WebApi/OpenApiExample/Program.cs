@@ -46,7 +46,7 @@ var app = builder.Build();
 
 if ( app.Environment.IsDevelopment() )
 {
-    app.MapOpenApi().WithDocumentPerVersion();
+    app.MapOpenApi();
     app.MapScalarApiReference(
         options =>
         {

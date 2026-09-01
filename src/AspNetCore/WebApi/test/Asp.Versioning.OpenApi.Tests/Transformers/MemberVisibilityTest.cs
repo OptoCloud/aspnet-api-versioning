@@ -96,7 +96,7 @@ public class MemberVisibilityTest
         var app = builder.Build();
 
         app.MapControllers();
-        app.MapOpenApi().WithDocumentPerVersion();
+        app.MapOpenApi();
 
         return app;
     }
@@ -120,7 +120,7 @@ public class MemberVisibilityTest
                      .HasApiVersion( 2.0 );
 
         api.MapGet( "{id:int}", ( int id ) => new Order() );
-        app.MapOpenApi().WithDocumentPerVersion();
+        app.MapOpenApi();
 
         return app;
     }

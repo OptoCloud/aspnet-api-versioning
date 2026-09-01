@@ -39,7 +39,7 @@ public class GrpcWellKnownTypeSchemaTransformerTest
         // assert
         schema["type"].GetValue<string>().Should().Be( "string" );
         schema["pattern"].GetValue<string>().Should().Be( @"^-?(?:0|[1-9]\d*)(?:\.\d{1,9})?s$" );
-        schema["example"].GetValue<string>().Should().Be( "1.500s" );
+        schema["examples"].AsArray()[0].GetValue<string>().Should().Be( "1.500s" );
 
         // the OpenAPI 'duration' format denotes an ISO 8601 duration, which is not what is serialized
         schema["format"].Should().BeNull();
@@ -56,7 +56,7 @@ public class GrpcWellKnownTypeSchemaTransformerTest
 
         // assert
         schema["type"].GetValue<string>().Should().Be( "string" );
-        schema["example"].GetValue<string>().Should().Be( "customer,lineItems" );
+        schema["examples"].AsArray()[0].GetValue<string>().Should().Be( "customer,lineItems" );
         schema["properties"].Should().BeNull();
     }
 
@@ -145,7 +145,7 @@ public class GrpcWellKnownTypeSchemaTransformerTest
 
         api.MapGet( "well-known", () => new WellKnownTypeModel() );
         api.MapGet( "user", () => new User() );
-        app.MapOpenApi().WithDocumentPerVersion();
+        app.MapOpenApi();
 
         var cancellationToken = TestContext.Current.CancellationToken;
 

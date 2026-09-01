@@ -52,7 +52,7 @@ people.MapGrpcService<V3.PeopleService>()
 
 if ( app.Environment.IsDevelopment() )
 {
-    app.MapOpenApi().WithDocumentPerVersion();
+    app.MapOpenApi();
     app.MapScalarApiReference(
         options =>
         {

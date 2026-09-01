@@ -75,7 +75,7 @@ if ( app.Environment.IsDevelopment() )
 {
     // access ~/$odata to identify OData endpoints that failed to match a route template
     app.UseODataRouteDebug();
-    app.MapOpenApi().WithDocumentPerVersion();
+    app.MapOpenApi();
     app.MapScalarApiReference(
         options =>
         {

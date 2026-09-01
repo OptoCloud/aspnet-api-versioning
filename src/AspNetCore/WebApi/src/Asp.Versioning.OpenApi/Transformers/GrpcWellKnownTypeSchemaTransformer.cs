@@ -80,7 +80,8 @@ public class GrpcWellKnownTypeSchemaTransformer : IOpenApiSchemaTransformer
     {
         schema.Type = JsonSchemaType.String;
         schema.Pattern = @"^-?(?:0|[1-9]\d*)(?:\.\d{1,9})?s$";
-        schema.Example = JsonValue.Create( "1.500s" );
+        schema.Examples ??= [];
+        schema.Examples.Add( JsonValue.Create( "1.500s" ) );
     }
 
     // a FieldMask is serialized as a comma-separated list of field paths. the paths are the JSON names of the
@@ -92,7 +93,8 @@ public class GrpcWellKnownTypeSchemaTransformer : IOpenApiSchemaTransformer
 
         schema.Type = JsonSchemaType.String;
         schema.Pattern = $"^(?:{Path}(?:,{Path})*)?$";
-        schema.Example = JsonValue.Create( "customer,lineItems" );
+        schema.Examples ??= [];
+        schema.Examples.Add( JsonValue.Create( "customer,lineItems" ) );
     }
 
     // an Any is the only supported type that remains an object, but its members are not the 'type_url' and 'value'
@@ -111,7 +113,7 @@ public class GrpcWellKnownTypeSchemaTransformer : IOpenApiSchemaTransformer
             {
                 Type = JsonSchemaType.String,
                 Description = "The fully-qualified type URL of the contained message.",
-                Example = JsonValue.Create( "type.googleapis.com/google.protobuf.Duration" ),
+                Examples = [JsonValue.Create( "type.googleapis.com/google.protobuf.Duration" )],
             },
         };
     }

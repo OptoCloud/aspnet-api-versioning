@@ -33,7 +33,7 @@ public class AcceptanceTest
                      .HasApiVersion( 1.0 );
 
         api.MapGet( "{id:int}", MinimalApi.Get ).Produces<int>().Produces( 400 );
-        app.MapOpenApi().WithDocumentPerVersion();
+        app.MapOpenApi();
 
         var cancellationToken = TestContext.Current.CancellationToken;
         using var stream = File.OpenRead( Path.Combine( AppContext.BaseDirectory, "Content", "v1-minimal.json" ) );
@@ -68,7 +68,7 @@ public class AcceptanceTest
         var app = builder.Build();
 
         app.MapControllers();
-        app.MapOpenApi().WithDocumentPerVersion();
+        app.MapOpenApi();
 
         var cancellationToken = TestContext.Current.CancellationToken;
         using var stream = File.OpenRead( Path.Combine( AppContext.BaseDirectory, "Content", "v1.json" ) );
@@ -108,7 +108,7 @@ public class AcceptanceTest
                      .HasApiVersion( 1.0 );
 
         api.MapGet( "{id:int}", MinimalApi.Get ).Produces<int>().Produces( 400 );
-        app.MapOpenApi().WithDocumentPerVersion();
+        app.MapOpenApi();
 
         var cancellationToken = TestContext.Current.CancellationToken;
         using var stream = File.OpenRead( Path.Combine( AppContext.BaseDirectory, "Content", "v1-mixed.json" ) );

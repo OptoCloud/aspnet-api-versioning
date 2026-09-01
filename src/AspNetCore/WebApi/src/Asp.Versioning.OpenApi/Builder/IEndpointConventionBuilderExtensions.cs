@@ -4,12 +4,7 @@
 
 namespace Microsoft.AspNetCore.Builder;
 
-using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
-using Asp.Versioning.OpenApi.Reflection;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
+using System.ComponentModel;
 
 /// <summary>
 /// Provides extension methods for <see cref="IEndpointConventionBuilder"/>.
@@ -27,29 +22,8 @@ public static class IEndpointConventionBuilderExtensions
         /// method to other endpoints may have unintended effects.
         /// </remarks>
         /// <returns>The original <see cref="IEndpointConventionBuilder">endpoint convention builder</see>.</returns>
-        public IEndpointConventionBuilder WithDocumentPerVersion()
-        {
-            builder.Finally( ApplyApiVersioning );
-            return builder;
-        }
-    }
-
-    private static void ApplyApiVersioning( EndpointBuilder builder )
-    {
-        if ( builder.RequestDelegate is { } action )
-        {
-            builder.RequestDelegate = context => InterceptRequestServices( context, action );
-        }
-    }
-
-    private static Task InterceptRequestServices( HttpContext context, RequestDelegate action )
-    {
-        if ( context.RequestServices is not KeyedServiceContainer requestServices )
-        {
-            requestServices = context.RequestServices.GetRequiredService<KeyedServiceContainer>();
-        }
-
-        context.RequestServices = requestServices;
-        return action( context );
+        [EditorBrowsable( EditorBrowsableState.Never )]
+        [Obsolete( "This method is no longer required and performs no action. It will be removed in a future version." )]
+        public IEndpointConventionBuilder WithDocumentPerVersion() => builder;
     }
 }

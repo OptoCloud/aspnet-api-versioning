@@ -7,7 +7,6 @@ namespace Asp.Versioning.OpenApi.Configuration;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
 
 // OpenApiOptions is sealed so we can't inherit from it, but we need to get in front of it. this factory allows
 // configuring VersionedOpenApiOptions registered when the services are added. IOptions<VersionedOpenApiOptions> isn't

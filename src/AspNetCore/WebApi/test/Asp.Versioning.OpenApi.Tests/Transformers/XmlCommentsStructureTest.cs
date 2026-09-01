@@ -696,7 +696,7 @@ public class XmlCommentsStructureTest
         api.MapGet( "documented", () => new Documented() );
         api.MapGet( "echo/{id:int}", MinimalApi.Echo );
         api.MapGet( "mixed", MinimalApi.Mixed );
-        app.MapOpenApi().WithDocumentPerVersion();
+        app.MapOpenApi();
 
         var cancellationToken = TestContext.Current.CancellationToken;
 
