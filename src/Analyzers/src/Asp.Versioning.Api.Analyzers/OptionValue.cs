@@ -18,6 +18,9 @@ internal static class OptionValue
     private const string Default = nameof( Default );
     private const string Empty = nameof( Empty );
     private const string ApiVersionType = "Asp.Versioning.ApiVersion";
+    private const double MaxExactInteger = 9007199254740992d; // 2^53
+    private static readonly double[] PowersOfTen =
+        [1d, 10d, 100d, 1000d, 10000d, 100000d, 1000000d, 10000000d, 100000000d, 1000000000d];
 
     /// <summary>
     /// Gets the form of the API version that options default to.
@@ -206,18 +209,39 @@ internal static class OptionValue
             return false;
         }
 
-        var number = new decimal( version );
-        var scale = ( decimal.GetBits( number )[3] >> 16 ) & 31;
-        var whole = decimal.Truncate( number );
-
-        if ( whole > int.MaxValue )
+        // scaling by each power of ten in turn and dividing back gives the original double again only once the scale
+        // reaches the number of digits the version was written with, and no sooner, because a shorter number would read
+        // back as a different double
+        for ( var scale = 0; scale < PowersOfTen.Length; scale++ )
         {
-            return false;
+            var power = PowersOfTen[scale];
+            var scaled = Math.Round( version * power );
+
+            // beyond this every integer no longer has a double of its own, so the trip back proves nothing
+            if ( scaled > MaxExactInteger )
+            {
+                break;
+            }
+
+            if ( scaled / power != version )
+            {
+                continue;
+            }
+
+            var number = (long) scaled;
+            var whole = number / (long) power;
+
+            if ( whole > int.MaxValue )
+            {
+                break;
+            }
+
+            major = (int) whole;
+            minor = (int) ( number - ( whole * (long) power ) );
+            return true;
         }
 
-        major = (int) whole;
-        minor = (int) ( ( number - whole ) * new decimal( Math.Pow( 10, scale ) ) );
-        return true;
+        return false;
     }
 
     /// <remarks>An argument stated by name can appear in any order, which the form cannot represent, so a

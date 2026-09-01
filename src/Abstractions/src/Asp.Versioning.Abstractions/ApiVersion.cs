@@ -17,6 +17,9 @@ public
 #endif
 partial class ApiVersion : IEquatable<ApiVersion>, IComparable<ApiVersion>, IFormattable
 {
+    private const double MaxExactInteger = 9007199254740992d; // 2^53
+    private static readonly double[] PowersOfTen =
+        [1d, 10d, 100d, 1000d, 10000d, 100000d, 1000000d, 10000000d, 100000000d, 1000000000d];
     private static ApiVersion? @default;
     private static ApiVersion? neutral;
     private int hashCode;
@@ -77,17 +80,9 @@ partial class ApiVersion : IEquatable<ApiVersion>, IComparable<ApiVersion>, IFor
             throw new ArgumentOutOfRangeException( nameof( version ) );
         }
 
-        Status = ValidateStatus(
-            status,
-            isValidStatus ?? throw new System.ArgumentNullException( nameof( isValidStatus ) ) );
-
-        var number = new decimal( version );
-        var bits = decimal.GetBits( number );
-        var scale = ( bits[3] >> 16 ) & 31;
-        var major = decimal.Truncate( number );
-        var minor = (int) ( ( number - major ) * new decimal( Math.Pow( 10, scale ) ) );
-
-        MajorVersion = (int) major;
+        Status = Validate( status, isValidStatus ?? throw new System.ArgumentNullException( nameof( isValidStatus ) ) );
+        Split( version, out var major, out var minor );
+        MajorVersion = major;
         MinorVersion = minor;
     }
 
@@ -117,7 +112,7 @@ partial class ApiVersion : IEquatable<ApiVersion>, IComparable<ApiVersion>, IFor
             throw new ArgumentOutOfRangeException( nameof( minorVersion ) );
         }
 
-        Status = ValidateStatus( status, isValidStatus ?? IsValidStatus );
+        Status = Validate( status, isValidStatus ?? IsValidStatus );
         GroupVersion = groupVersion;
         MajorVersion = majorVersion;
         MinorVersion = minorVersion;
@@ -351,7 +346,7 @@ partial class ApiVersion : IEquatable<ApiVersion>, IComparable<ApiVersion>, IFor
 #pragma warning restore IDE0079
     }
 
-    private static string? ValidateStatus( string? status, Func<string?, bool> isValid )
+    private static string? Validate( string? status, Func<string?, bool> isValid )
     {
         if ( isValid( status ) )
         {
@@ -360,5 +355,46 @@ partial class ApiVersion : IEquatable<ApiVersion>, IComparable<ApiVersion>, IFor
 
         var message = string.Format( CultureInfo.CurrentCulture, Format.ApiVersionBadStatus, status );
         throw new System.ArgumentException( message, nameof( status ) );
+    }
+
+    // A version number is written the way it reads, so only the digits that were written can be meant. A double holds
+    // those digits in base 2, where 1.1 is really 4953959590107546/2^52, so the digits that were written exist nowhere
+    // in the number itself. What can be asked instead is how many digits it takes to write the number: scaling by each
+    // power of ten in turn and dividing back gives the original double again only once the scale reaches the number of
+    // digits that were written, and no sooner, because a shorter number would read back as a different double. 2.7
+    // survives the trip only at a scale of ten, which makes 27 the digits and 1 the count of them after the point. A
+    // number that needs more digits than that was not written as a version.
+    private static void Split( double version, out int major, out int minor )
+    {
+        for ( var scale = 0; scale < PowersOfTen.Length; scale++ )
+        {
+            var power = PowersOfTen[scale];
+            var scaled = Math.Round( version * power );
+
+            // beyond this every integer no longer has a double of its own, so the trip back proves nothing
+            if ( scaled > MaxExactInteger )
+            {
+                break;
+            }
+
+            if ( scaled / power != version )
+            {
+                continue;
+            }
+
+            var number = (long) scaled;
+            var whole = number / (long) power;
+
+            if ( whole > int.MaxValue )
+            {
+                break;
+            }
+
+            major = (int) whole;
+            minor = (int) ( number - ( whole * (long) power ) );
+            return;
+        }
+
+        throw new ArgumentOutOfRangeException( nameof( version ) );
     }
 }

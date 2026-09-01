@@ -165,8 +165,15 @@ public partial class ApiVersionTest
     [Theory]
     [InlineData( 0.9, 0, 9 )]
     [InlineData( 1.0, 1, 0 )]
+    [InlineData( 1.1, 1, 1 )]
     [InlineData( 2d, 2, 0 )]
+    [InlineData( 2.7, 2, 7 )]
     [InlineData( 3.5, 3, 5 )]
+    [InlineData( 3.15, 3, 15 )]
+    [InlineData( 0.07, 0, 7 )]
+    [InlineData( 99.99, 99, 99 )]
+    [InlineData( 1.23456789, 1, 23456789 )]
+    [InlineData( 2147483647d, 2147483647, 0 )]
     public void new_api_version_should_split_double_into_major_and_minor_versions( double version, int major, int minor )
     {
         // arrange
@@ -184,6 +191,10 @@ public partial class ApiVersionTest
     [InlineData( double.NaN )]
     [InlineData( double.PositiveInfinity )]
     [InlineData( double.NegativeInfinity )]
+    [InlineData( 2147483648d )]
+    [InlineData( 1e20 )]
+    [InlineData( 0.3333333333333333 )]
+    [InlineData( 1.23e-10 )]
     public void new_api_version_should_not_allow_invalid_double( double version )
     {
         // arrange
