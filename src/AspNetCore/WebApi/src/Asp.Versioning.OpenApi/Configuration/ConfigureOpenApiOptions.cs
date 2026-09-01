@@ -37,8 +37,7 @@ internal sealed class ConfigureOpenApiOptions(
                 Name = name,
                 Description = description,
                 Options = options,
-                OnCreated = versionedOptions =>
-                    Configure( versionedOptions, xmlComments, grpcWellKnownTypes, apiDescriptionProvider ),
+                OnCreated = opts => Configure( opts, xmlComments, grpcWellKnownTypes, apiDescriptionProvider ),
             };
 
             factory.CreateAndConfigure( context );
